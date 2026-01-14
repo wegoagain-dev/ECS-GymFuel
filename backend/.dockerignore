@@ -1,0 +1,11 @@
+# Python/venv
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env.local
+.env
+.DS_Store
+.git
+.gitignore
+README.md
