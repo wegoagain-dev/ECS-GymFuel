@@ -62,6 +62,13 @@ class ApiClient {
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({ detail: 'Unknown error' }))
+            // Handle FastAPI validation errors (422)
+            if (Array.isArray(error.detail)) {
+                const validationErrors = error.detail
+                    .map((err: any) => err.msg.replace(/^Value error,\s*/i, ''))
+                    .join(', ')
+                throw new Error(validationErrors)
+            }
             throw new Error(error.detail || 'Request failed')
         }
 
