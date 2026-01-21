@@ -85,9 +85,9 @@ jobs:
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
 
-    #  - name: Force ECS Update (Backend)
-    #    run: |
-    #      aws ecs update-service --cluster ${{ env.CLUSTER_NAME }} --service ${{ env.SERVICE_NAME_BACKEND }} --force-new-deployment
-    #  - name: Force ECS Update (Frontend)
-    #    run: |
-    #      aws ecs update-service --cluster ${{ env.CLUSTER_NAME }} --service ${{ env.SERVICE_NAME_FRONTEND }} --force-new-deployment
+      - name: Force ECS Update (Backend)
+        run: |
+          aws ecs update-service --cluster ${{ env.CLUSTER_NAME }} --service ${{ env.SERVICE_NAME_BACKEND }} --force-new-deployment
+      - name: Force ECS Update (Frontend)
+        run: |
+          aws ecs update-service --cluster ${{ env.CLUSTER_NAME }} --service ${{ env.SERVICE_NAME_FRONTEND }} --force-new-deployment
