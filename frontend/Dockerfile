@@ -16,10 +16,9 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-
 RUN adduser -D nextjs
 
-COPY --from=builder /app/public ./public
+# COPY --from=builder /app/public ./public
 # --chown so user 'nextjs' owns the files
 COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
