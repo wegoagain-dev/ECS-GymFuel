@@ -9,9 +9,9 @@ env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY_FRONTEND: gymfuel-frontend
   ECR_REPOSITORY_BACKEND: gymfuel-backend
-  CLUSTER_NAME: gymfuel_ecs_cluster
-  SERVICE_NAME_BACKEND: gymfuel-service_backend
-  SERVICE_NAME_FRONTEND: gymfuel-service_frontend
+  CLUSTER_NAME: gymfuel-ecs-cluster
+  SERVICE_NAME_BACKEND: gymfuel-service-backend
+  SERVICE_NAME_FRONTEND: gymfuel-service-frontend
 
 jobs:
   build-and-push:
