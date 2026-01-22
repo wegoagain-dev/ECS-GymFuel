@@ -27,9 +27,9 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = var.environment
-    Project = var.project_name
+    Project     = var.project_name
   }
 }
 
@@ -41,9 +41,9 @@ resource "aws_lb" "alb" {
   subnets            = module.vpc.public_subnets
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = var.environment
-    Project = var.project_name
+    Project     = var.project_name
   }
 }
 
@@ -81,19 +81,19 @@ resource "aws_lb_listener" "http" {
   port              = "80"
   protocol          = "HTTP"
 
- # default_action { # sending to frontend
- #   type             = "forward"
- #   target_group_arn = aws_lb_target_group.frontend.arn
- # }
- default_action {
-   type = "redirect"
+  # default_action { # sending to frontend
+  #   type             = "forward"
+  #   target_group_arn = aws_lb_target_group.frontend.arn
+  # }
+  default_action {
+    type = "redirect"
 
-   redirect {
-     port        = "443"
-     protocol    = "HTTPS"
-     status_code = "HTTP_301"
-   }
- }
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
 }
 # wont work as its for the http, but its already rerouted
 # resource "aws_lb_listener_rule" "api" { # if path is /api
@@ -118,7 +118,7 @@ resource "aws_lb_listener" "https" {
   port              = "443"
   protocol          = "HTTPS"
   certificate_arn   = module.acm.acm_certificate_arn # certificate for domain_name
-  ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
   default_action { # sending to frontend
     type             = "forward"
@@ -128,10 +128,10 @@ resource "aws_lb_listener" "https" {
 
 resource "aws_lb_listener_rule" "api_https" { # if path is /api
   listener_arn = aws_lb_listener.https.arn
-  priority = 100 # to run before the default
+  priority     = 100 # to run before the default
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.backend.arn
   }
 

@@ -2,57 +2,57 @@ resource "aws_db_subnet_group" "rds" {
   name       = var.aws_db_subnet_name
   subnet_ids = module.vpc.database_subnets # from vpc
 
-tags = {
-  Terraform = "true"
-  Environment = var.environment
-  Project = var.project_name
+  tags = {
+    Terraform   = "true"
+    Environment = var.environment
+    Project     = var.project_name
   }
 }
 
 resource "aws_security_group" "rds" {
-  name        = var.aws_db_sg_name
+  name   = var.aws_db_sg_name
   vpc_id = module.vpc.vpc_id
 
   ingress {
-        from_port   = 5432
-        to_port     = 5432
-        protocol    = "tcp"
-        security_groups = [aws_security_group.ecs_tasks.id] # Allow 5432 only from ECS SG
-      }
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ecs_tasks.id] # Allow 5432 only from ECS SG
+  }
 
-tags = {
-  Terraform = "true"
-  Environment = var.environment
-  Project = var.project_name
+  tags = {
+    Terraform   = "true"
+    Environment = var.environment
+    Project     = var.project_name
   }
 }
 
 resource "aws_db_instance" "db" {
-  allocated_storage    = 20
-  storage_type         = "gp2"
-  engine               = "postgres"
-  engine_version       = "16.1"
-  instance_class       = "db.t3.micro"
-  db_name              = var.db_name
-  username             = var.db_username
-  password             = random_password.password.result
-  port                 = 5432
-  skip_final_snapshot  = true # skip final snapshot for terraform destory, saving me time, false for prod
-  db_subnet_group_name = aws_db_subnet_group.rds.name
+  allocated_storage      = 20
+  storage_type           = "gp2"
+  engine                 = "postgres"
+  engine_version         = "16.8"
+  instance_class         = var.db_instance_class
+  db_name                = var.db_name
+  username               = var.db_username
+  password               = random_password.password.result
+  port                   = 5432
+  skip_final_snapshot    = true # skip final snapshot for terraform destory, saving me time, false for prod
+  db_subnet_group_name   = aws_db_subnet_group.rds.name
   vpc_security_group_ids = [aws_security_group.rds.id]
-  multi_az = false # to save money, on for production
+  multi_az               = false # to save money, on for production
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = var.environment
-    Project = "${var.project_name}-db"
+    Project     = "${var.project_name}-db"
   }
 }
 
 # random password generator
 resource "random_password" "password" {
-  length  = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 # create secrets manager

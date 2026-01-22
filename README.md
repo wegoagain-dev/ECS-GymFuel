@@ -23,56 +23,139 @@
 GymFuel is a complete full-stack project that demonstrates modern web application development and production ready DevOps practices. This project showcases a Next.js frontend with a FastAPI backend, featuring AI-powered recipe generation, meal planning, grocery tracking, and a coach-client system. This is deployed on AWS ECS with containerised infrastructure.
 
 ## Architecture
-[]
+![Architecture Diagram](./images/ecs-gymfuel.svg)
+
+### Architecture Explained
+
+1. **CI/CD Pipeline:** GitHub Actions → Terraform → AWS
+2. **Container Registry:** Docker → Amazon ECR
+3. **Load Balancing:** Application Load Balancer with health checks
+4. **Container Orchestration:** ECS Fargate across multiple AZs
+5. **Monitoring:** CloudWatch logs and metrics
 
 ## Tech Stack
 
 ### Application
-- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS v4, shadcn/ui
-- Backend: FastAPI (Python 3.11), PostgreSQL
-- State Management: Zustand
-- Authentication: JWT with role-based access (client/coach)
-- AI Integration: Recipe generation API
-- Styling: Glassmorphism design with dark/light theme support
+- **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS v4, shadcn/ui
+- **Backend:** FastAPI (Python 3.11), PostgreSQL
+- **Authentication:** JWT with role-based access (client/coach)
+- **AI Integration:** Recipe generation API (coming soon!)
 
-### DevOps/Infrastructure (to update)
-- Containerisation: Docker multi-stage builds for optimised image sizes
-- Orchestration: AWS ECS (Elastic Container Service) with Fargate
-- Container Registry: AWS ECR (Elastic Container Registry)
-- Database: AWS RDS PostgreSQL with automated backups
-- Networking: AWS VPC with public/private subnets, Application Load Balancer
-- Reverse Proxy: Nginx for request routing and static file serving (optional)
-- Infrastructure as Code: Docker Compose for local development
+## Infrastructure
 
-## Architecture Explained
+### Cloud
+- **Containerisation:** Docker multi-stage builds for optimised image sizes
+- **Orchestration:** AWS ECS (Elastic Container Service) with Fargate, Production Ready
+- **Container Registry:** AWS ECR (Elastic Container Registry)
+- **Database:** AWS RDS PostgreSQL with optional automated backups
+- **Networking:** AWS VPC with public/private subnets/database subnets, Application Load Balancer, Multi-AZ deployment
+- **Infrastructure as Code:** Terraform for cloud infrastructure, Docker Compose for local development
+- **Reverse Proxy:** Nginx for request routing (only for docker-compose)
+
+### Security
+- **IAM Roles:** IAM Role-based access control for AWS resources, least privilege principle
+- **Logging:** AWS CloudTrail for activity logging
+- **HTTPS:** Automatically provisioned SSL/TLS certificates using AWS Certificate Manager (ACM)
+- **Security Groups:** AWS Security Groups for network traffic control
 
 ### Terraform State Management
 - **Remote Backend:** S3 bucket in `eu-west-2` with encryption enabled
 - **Benefits:** Centralised state storage, team collaboration, automated backups, cross-environment consistency
 
 ### CI/CD Pipelines
+1. CI Pipeline (ci.yml)
+    - **Trigger:** On push to main branch
+    - **Actions:**
+      - Build Docker image using Dockerfile
+      - Scan Images using Trivy
+      - Push Docker image to ECR
+      - Deploy to ECS Fargate
 
-### Security
+### Trivy (Security Scanning)
+![](./images/trivy-scan-fail.png)
 
-### Monitoring and Observability
+Image is showing Trivy blocking a CRITICAL vulnerability, stopping my workflow from proceeding and preventing deployment.
 
 ---
 
-## Local Development Setup
+## Setup Guide
 
 ### Prerequisites
-- Docker and Docker Compose
-
-### Using Docker Compose
+- Docker
+- AWS CLI
+- Terraform for [Terraform Setup](#terraform-setup)
+- Added access keys to use workflow automation (GitHub Actions)
 
 ### Terraform Setup
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/wegoagain-dev/ECS-GymFuel.git
+    cd ECS-GymFuel
+    ```
+2. Configure terraform.tfvars and modify where needed
+    ```bash
+    cd terraform
+    cp terraform.tfvars.example terraform.tfvars
+    ```
+3. Create a new S3 bucket and Table for Terraform state storage:
+    ```bash
+    # create bucket first in aws with bucket name, region, versioning, encryption, block public access)
 
+    # aws dynamodb create-table \
+    #  --table-name gymfuel-terraform-lock \
+    #  --key-schema AttributeName=LockID,KeyType=HASH \
+    #  --attribute-definitions AttributeName=LockID,AttributeType=S \
+    #  --billing-mode PAY_PER_REQUEST \
+    #  --region eu-west-2
+    ```
+4. Initialise Terraform:
+    ```bash
+    terraform init
+    ```
+4. Apply Terraform configuration:
+    ```bash
+    terraform apply
+    ```
+5. Initialise GitHub Actions:
+    ```bash
+    cd ..
+    git init
+    git add .
+    git commit -m "Initial commit"
+    git branch -M main
+    git remote add origin https://github.com/<your-name>/<your-repo-name>.git # create a new repository on GitHub and replace <your-name> with your username
+    git push -u origin main
+    ```
 
+### Using Docker Compose
+1.  **Configure Environment Variables**
+    Copy the example configuration file to create your local secrets file:
+    ```bash
+    cp .env.example .env
+    ```
+2.  **Start the Application**
+    Build and start the containers in the background:
+    ```bash
+    docker-compose up -d --build
+    ```
+3.  **Access Services**
+    - Web App: http://localhost (http://localhost) (Proxied via Nginx)
+    - API Docs: http://localhost:8000/docs (http://localhost:8000/docs) (Swagger UI)
+    - Database: localhost:5432 (User/Pass: postgres/postgres from default .env)
+4.  **Stop the Application**
+    To stop all running containers:
+    ```bash
+    docker-compose down
+    ```
+
+---
 
 ## Development Roadmap
 
-- [ ] Full AI Recipe Generation - in progress
+- [ ] Full AI Recipe Generation
 - [ ] Mobile app (React Native)
+- [ ] Implement OIDC instead of manual github actions keys
+- [ ] Monitoring and Observability (CPU, Memory, Disk Space)
 
 ## License
 

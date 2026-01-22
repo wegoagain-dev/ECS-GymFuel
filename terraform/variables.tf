@@ -53,13 +53,13 @@ variable "database_subnets" {
 variable "aws_db_subnet_name" {
   description = "Name of the AWS DB subnet group"
   type        = string
-  default     = "gymfuel_db_subnet"
+  default     = "gymfuel-db-subnet"
 }
 
 variable "aws_db_sg_name" {
   description = "Name of the AWS DB security group"
   type        = string
-  default     = "gymfuel_db_security_group"
+  default     = "gymfuel-db-security-group"
 }
 
 variable "db_name" {
@@ -97,25 +97,25 @@ variable "ecr_frontend_name" {
 variable "aws_alb_sg_name" {
   description = "Name of the AWS ALB security group"
   type        = string
-  default     = "gymfuel_alb_security_group"
+  default     = "gymfuel-alb-security-group"
 }
 
 variable "aws_alb_name" {
   description = "Name of the AWS ALB"
   type        = string
-  default     = "gymfuel_alb"
+  default     = "gymfuel-alb"
 }
 
 variable "target_group_backend" {
   description = "Name of the AWS ALB target group"
   type        = string
-  default     = "gymfuel_alb_backend"
+  default     = "gymfuel-alb-backend"
 }
 
 variable "target_group_frontend" {
   description = "Name of the AWS ALB target group"
   type        = string
-  default     = "gymfuel_alb_frontend"
+  default     = "gymfuel-alb-frontend"
 }
 
 # iam
@@ -123,13 +123,13 @@ variable "target_group_frontend" {
 variable "execution_role_name" {
   description = "Name of the AWS IAM role for ECS execution"
   type        = string
-  default     = "gymfuel_ecs_execution_role"
+  default     = "gymfuel-ecs-execution-role"
 }
 
 variable "task_role_name" {
   description = "Name of the AWS IAM role for ECS task"
   type        = string
-  default     = "gymfuel_ecs_task_role"
+  default     = "gymfuel-ecs-task-role"
 }
 
 # ecs
@@ -137,7 +137,7 @@ variable "task_role_name" {
 variable "cluster_name" {
   description = "Name of the AWS ECS cluster"
   type        = string
-  default     = "gymfuel_ecs_cluster"
+  default     = "gymfuel-ecs-cluster"
 }
 
 variable "logging_backend" {
@@ -155,31 +155,31 @@ variable "logging_frontend" {
 variable "ecs_security_group_name" {
   description = "Name of the AWS ECS security group"
   type        = string
-  default     = "gymfuel_ecs_security_group"
+  default     = "gymfuel-ecs-security-group"
 }
 
 variable "task_definition_backend" {
   description = "Name of the AWS ECS task definition for backend"
   type        = string
-  default     = "gymfuel_task_definition_backend"
+  default     = "gymfuel-task-definition-backend"
 }
 
 variable "task_definition_frontend" {
   description = "Name of the AWS ECS task definition for frontend"
   type        = string
-  default     = "gymfuel_task_definition_frontend"
+  default     = "gymfuel-task-definition-frontend"
 }
 
 variable "service_backend" {
   description = "Name of the AWS ECS service for backend"
   type        = string
-  default     = "gymfuel_service_backend"
+  default     = "gymfuel-service-backend"
 }
 
 variable "service_frontend" {
   description = "Name of the AWS ECS service for frontend"
   type        = string
-  default     = "gymfuel_service_frontend"
+  default     = "gymfuel-service-frontend"
 }
 
 # domain route53/acm
@@ -187,4 +187,23 @@ variable "domain_name" {
   description = "Domain name for the application"
   type        = string
   default     = "gymfuel.xyz"
+}
+
+# scaling and sizing
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "ecs_cpu" {
+  description = "CPU units for ECS tasks"
+  type        = string
+  default     = "256"
+}
+
+variable "ecs_memory" {
+  description = "Memory for ECS tasks"
+  type        = string
+  default     = "512"
 }

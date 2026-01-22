@@ -4,14 +4,14 @@ resource "aws_ecs_cluster" "main" {
   name = var.cluster_name
 
   setting { # to get moer than just cpu/memory metrics
-      name  = "containerInsights"
-      value = "enabled"
-    }
+    name  = "containerInsights"
+    value = "enabled"
+  }
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = var.environment
-    Project = var.project_name
+    Project     = var.project_name
   }
 }
 
@@ -32,19 +32,19 @@ resource "aws_security_group" "ecs_tasks" {
   vpc_id      = module.vpc.vpc_id
   # allow traffic ONLY from the ALB Security Group
   ingress {
-      protocol        = "tcp"
-      from_port       = 3000
-      to_port         = 3000
-      security_groups = [aws_security_group.alb_sg.id]
-      description     = "Allow ALB to reach Frontend"
-    }
+    protocol        = "tcp"
+    from_port       = 3000
+    to_port         = 3000
+    security_groups = [aws_security_group.alb_sg.id]
+    description     = "Allow ALB to reach Frontend"
+  }
   ingress {
-      protocol        = "tcp"
-      from_port       = 8000
-      to_port         = 8000
-      security_groups = [aws_security_group.alb_sg.id]
-      description     = "Allow ALB to reach Backend"
-    }
+    protocol        = "tcp"
+    from_port       = 8000
+    to_port         = 8000
+    security_groups = [aws_security_group.alb_sg.id]
+    description     = "Allow ALB to reach Backend"
+  }
   # Outbound Rule: Allow everything
   egress {
     protocol    = "-1"
@@ -53,27 +53,27 @@ resource "aws_security_group" "ecs_tasks" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = var.environment
-    Project = var.project_name
+    Project     = var.project_name
   }
 }
 
 # task definition for backend (setting up my image)
 resource "aws_ecs_task_definition" "backend" {
-  family = var.task_definition_backend
+  family                   = var.task_definition_backend
   network_mode             = "awsvpc" # each task to get own ENI and IP address
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = var.ecs_cpu
+  memory                   = var.ecs_memory
 
   # roles
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
 
   container_definitions = jsonencode([ # info and image about the backend container
     {
-      name      = var.service_backend # must match the service name
+      name      = "backend"
       image     = "${aws_ecr_repository.backend.repository_url}:latest"
       essential = true
       portMappings = [ # host 8000 to container 8000
@@ -87,8 +87,8 @@ resource "aws_ecs_task_definition" "backend" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group" = aws_cloudwatch_log_group.backend.name
-          "awslogs-region" = var.aws_region
+          "awslogs-group"         = aws_cloudwatch_log_group.backend.name
+          "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
       }
@@ -113,20 +113,20 @@ resource "aws_ecs_task_definition" "backend" {
 
 # task definition for frontend
 resource "aws_ecs_task_definition" "frontend" {
-  family = var.task_definition_frontend
+  family                   = var.task_definition_frontend
   network_mode             = "awsvpc" # each task to get own ENI and IP address
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = var.ecs_cpu
+  memory                   = var.ecs_memory
 
   # roles
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
 
-  container_definitions = jsonencode([ # info and image about the backend container
+  container_definitions = jsonencode([ # info and image about the frontend container
     {
-      name      = var.service_backend
-      image     = "${aws_ecr_repository.backend.repository_url}:latest"
+      name      = "frontend"
+      image     = "${aws_ecr_repository.frontend.repository_url}:latest"
       essential = true
       portMappings = [ # host 3000 to container 3000
         {
@@ -139,8 +139,8 @@ resource "aws_ecs_task_definition" "frontend" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group" = aws_cloudwatch_log_group.frontend.name
-          "awslogs-region" = var.aws_region
+          "awslogs-group"         = aws_cloudwatch_log_group.frontend.name
+          "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
       }
@@ -159,7 +159,7 @@ resource "aws_ecs_service" "backend" {
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.backend.arn
   desired_count   = 1
-  launch_type = "FARGATE"
+  launch_type     = "FARGATE"
 
   network_configuration {
     subnets         = module.vpc.private_subnets
@@ -173,9 +173,10 @@ resource "aws_ecs_service" "backend" {
   }
 
   deployment_circuit_breaker {
-      enable   = true
-      rollback = true
-    }
+    enable   = true
+    rollback = true
+  }
+  depends_on = [aws_lb_listener_rule.api_https]
 }
 
 # service is a way to set up how my actual ecs keeps running
@@ -184,7 +185,7 @@ resource "aws_ecs_service" "frontend" {
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.frontend.arn
   desired_count   = 1
-  launch_type = "FARGATE"
+  launch_type     = "FARGATE"
 
   network_configuration {
     subnets         = module.vpc.private_subnets
@@ -198,7 +199,8 @@ resource "aws_ecs_service" "frontend" {
   }
 
   deployment_circuit_breaker { # if issue with ecr image reroll to previous version
-      enable   = true
-      rollback = true
-    }
+    enable   = true
+    rollback = true
+  }
+  depends_on = [aws_lb_listener.https]
 }
