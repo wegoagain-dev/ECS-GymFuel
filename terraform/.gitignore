@@ -3,7 +3,7 @@
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
-terraform.tfvars  # Never commit real secrets!
+terraform.tfvars
 # ============================================
 # .tfplan files
 *.plan

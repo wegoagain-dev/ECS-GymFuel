@@ -56,11 +56,11 @@ resource "random_password" "password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 # create secrets manager
-resource "aws_secretsmanager_secret" "db_string" {
+resource "aws_secretsmanager_secret" "ecs_db_string" {
   name = var.secret_manager_name_db
 }
 # store db  in secrets manager
 resource "aws_secretsmanager_secret_version" "db_string_version" {
-  secret_id     = aws_secretsmanager_secret.db_string.id
+  secret_id     = aws_secretsmanager_secret.ecs_db_string.id
   secret_string = "postgresql://${var.db_username}:${random_password.password.result}@${aws_db_instance.db.address}:5432/${var.db_name}"
 }

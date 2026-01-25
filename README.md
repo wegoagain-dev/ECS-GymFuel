@@ -23,7 +23,7 @@
 GymFuel is a complete full-stack project that demonstrates modern web application development and production ready DevOps practices. This project showcases a Next.js frontend with a FastAPI backend, featuring AI-powered recipe generation, meal planning, grocery tracking, and a coach-client system. This is deployed on AWS ECS with containerised infrastructure.
 
 ## Architecture
-![Architecture Diagram](./images/ecs-gymfuel.svg)
+![Architecture Diagram](./images/ecs-gymfuel.png)
 
 ### Architecture Explained
 
@@ -97,16 +97,9 @@ Image is showing Trivy blocking a CRITICAL vulnerability, stopping my workflow f
     cd terraform
     cp terraform.tfvars.example terraform.tfvars
     ```
-3. Create a new S3 bucket and Table for Terraform state storage:
+3. Create a new S3 bucket for Terraform state storage:
     ```bash
-    # create bucket first in aws with bucket name, region, versioning, encryption, block public access)
-
-    # aws dynamodb create-table \
-    #  --table-name gymfuel-terraform-lock \
-    #  --key-schema AttributeName=LockID,KeyType=HASH \
-    #  --attribute-definitions AttributeName=LockID,AttributeType=S \
-    #  --billing-mode PAY_PER_REQUEST \
-    #  --region eu-west-2
+    # create bucket (with same name as the backend s3) first in aws with bucket name, region, versioning, encryption, block public access
     ```
 4. Initialise Terraform:
     ```bash

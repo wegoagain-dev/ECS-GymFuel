@@ -1,11 +1,4 @@
-# create bucket first in aws with bucket name, region, versioning, encryption, block public access)
-
-# aws dynamodb create-table \
-#  --table-name gymfuel-terraform-lock \
-#  --key-schema AttributeName=LockID,KeyType=HASH \
-#  --attribute-definitions AttributeName=LockID,AttributeType=S \
-#  --billing-mode PAY_PER_REQUEST \
-#  --region eu-west-2
+# create bucket (with same name as the backend s3) first in aws with bucket name, region, versioning, encryption, block public access
 
 terraform {
   required_providers {
@@ -20,7 +13,7 @@ terraform {
     key            = "dev/terraform.tfstate"
     region         = "eu-west-2"
     encrypt        = true
-    dynamodb_table = "gymfuel-terraform-lock"
+    use_lockfile = true
   }
   #
 

@@ -33,7 +33,7 @@ resource "aws_iam_role_policy" "ecs_secrets_policy" {
         "secretsmanager:GetSecretValue"
       ]
       Resource = [
-        aws_secretsmanager_secret.db_string.arn
+        aws_secretsmanager_secret.ecs_db_string.arn
       ]
     }]
   })

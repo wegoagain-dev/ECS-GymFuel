@@ -104,7 +104,7 @@ resource "aws_ecs_task_definition" "backend" {
           # AWS (Terraform)
           # postgresql://${var.db_username}:${random_password.password.result}@${aws_db_instance.db.address}:5432/${var.db_name}
           name      = "DATABASE_URL"
-          valueFrom = aws_secretsmanager_secret.db_string.arn
+          valueFrom = aws_secretsmanager_secret.ecs_db_string.arn
         }
       ]
     }
