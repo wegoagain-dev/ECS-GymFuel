@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 
 # reminder: libc6-compat might be needed. in nextjs image build.
 RUN apk add --no-cache libc6-compat
@@ -13,7 +13,7 @@ COPY . .
 RUN npm run build
 
 # Production image, copy all the files and run
-FROM node:20-alpine AS runner
+FROM node:25-alpine AS runner
 WORKDIR /app
 
 RUN adduser -D nextjs

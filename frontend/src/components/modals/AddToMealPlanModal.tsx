@@ -78,10 +78,10 @@ export function AddToMealPlanModal() {
 
     return (
         <Dialog open={isAddToMealPlanModalOpen} onOpenChange={setAddToMealPlanModalOpen}>
-            <DialogContent className="max-w-sm">
+            <DialogContent className="max-w-sm border-border bg-card">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5 text-blue-500" />
+                    <DialogTitle className="flex items-center gap-2 text-xl">
+                        <Calendar className="h-5 w-5 text-lime-600 dark:text-[#CCFF00]" />
                         Add to Meal Plan
                     </DialogTitle>
                     <DialogDescription>
@@ -93,10 +93,10 @@ export function AddToMealPlanModal() {
                     <div className="space-y-2">
                         <Label>Day of the Week</Label>
                         <Select value={day} onValueChange={setDay}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-muted border-border">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="border-border bg-card">
                                 {DAYS.map(d => (
                                     <SelectItem key={d} value={d}>{d}</SelectItem>
                                 ))}
@@ -107,10 +107,10 @@ export function AddToMealPlanModal() {
                     <div className="space-y-2">
                         <Label>Meal Type</Label>
                         <Select value={mealType} onValueChange={setMealType}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-muted border-border">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="border-border bg-card">
                                 {MEAL_TYPES.map(t => (
                                     <SelectItem key={t} value={t}>{t}</SelectItem>
                                 ))}
@@ -119,10 +119,10 @@ export function AddToMealPlanModal() {
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setAddToMealPlanModalOpen(false)}>
+                        <Button type="button" variant="outline" onClick={() => setAddToMealPlanModalOpen(false)} className="border-border">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className="glass-button">
                             {isLoading ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (

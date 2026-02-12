@@ -101,10 +101,10 @@ export function CoachDashboard() {
 
     if (user?.role !== "coach") {
         return (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg">
-                <Users className="h-12 w-12 text-zinc-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Coach Access Only</h3>
-                <p className="text-zinc-500 dark:text-zinc-400">Please sign in as a coach to access this dashboard.</p>
+            <div className="flex flex-col items-center justify-center p-8 text-center glass-card rounded-xl">
+                <Users className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-foreground">Coach Access Only</h3>
+                <p className="text-muted-foreground">Please sign in as a coach to access this dashboard.</p>
             </div>
         )
     }
@@ -113,13 +113,13 @@ export function CoachDashboard() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold">Coach Dashboard</h2>
-                    <p className="text-zinc-400">Manage your clients and track their progress.</p>
+                    <h2 className="text-2xl font-bold text-foreground">Coach Dashboard</h2>
+                    <p className="text-muted-foreground">Manage your clients and track their progress.</p>
                 </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-                <Card className="md:col-span-1 border-zinc-200 dark:border-zinc-800">
+                <Card className="md:col-span-1 border-border bg-card">
                     <CardHeader>
                         <CardTitle>Link New Client</CardTitle>
                         <CardDescription>Enter client's email and their unique code.</CardDescription>
@@ -132,7 +132,7 @@ export function CoachDashboard() {
                                 </Alert>
                             )}
                             {addSuccess && (
-                                <Alert className="border-green-600 text-green-600">
+                                <Alert className="border-emerald-500 text-emerald-500">
                                     <AlertDescription>{addSuccess}</AlertDescription>
                                 </Alert>
                             )}
@@ -143,6 +143,7 @@ export function CoachDashboard() {
                                     onChange={(e) => setAddClientEmail(e.target.value)}
                                     placeholder="client@example.com"
                                     required
+                                    className="bg-muted border-border"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -152,9 +153,10 @@ export function CoachDashboard() {
                                     onChange={(e) => setAddClientCode(e.target.value)}
                                     placeholder="e.g. A1B2C3D4"
                                     required
+                                    className="bg-muted border-border"
                                 />
                             </div>
-                            <Button className="w-full" type="submit" disabled={isAddingClient}>
+                            <Button className="w-full glass-button" type="submit" disabled={isAddingClient}>
                                 {isAddingClient ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
                                 Link Client
                             </Button>
@@ -162,7 +164,7 @@ export function CoachDashboard() {
                     </CardContent>
                 </Card>
 
-                <Card className="md:col-span-1 border-zinc-200 dark:border-zinc-800">
+                <Card className="md:col-span-1 border-border bg-card">
                     <CardHeader>
                         <CardTitle>My Clients</CardTitle>
                         <CardDescription>Select a client to view their meal plan.</CardDescription>
@@ -170,10 +172,10 @@ export function CoachDashboard() {
                     <CardContent>
                         {isLoadingClients ? (
                             <div className="flex justify-center p-4">
-                                <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
+                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                             </div>
                         ) : clients.length === 0 ? (
-                            <div className="text-center p-8 text-zinc-500 border border-dashed border-gray-200 dark:border-zinc-800 rounded-lg">
+                            <div className="text-center p-8 text-muted-foreground border border-dashed border-border rounded-lg">
                                 <p>No clients linked yet.</p>
                             </div>
                         ) : (
@@ -182,8 +184,8 @@ export function CoachDashboard() {
                                     <div
                                         key={client.id}
                                         className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${selectedClient?.id === client.id
-                                            ? "bg-orange-50 border-orange-500/50 dark:bg-purple-900/20 dark:border-purple-500/50"
-                                            : "bg-white dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700 hover:border-orange-300 dark:hover:border-zinc-500"
+                                            ? "bg-lime-500/10 border-lime-500/50 dark:bg-[#CCFF00]/10 dark:border-[#CCFF00]/50"
+                                            : "bg-muted/50 border-border hover:border-lime-500/30 dark:hover:border-[#CCFF00]/30"
                                             }`}
                                         onClick={() => {
                                             handleViewClient(client)
@@ -194,12 +196,12 @@ export function CoachDashboard() {
                                         }}
                                     >
                                         <div className="min-w-0 mr-2">
-                                            <p className="font-medium truncate">{client.full_name || client.username}</p>
-                                            <p className="text-xs text-zinc-400 truncate">{client.email}</p>
+                                            <p className="font-medium truncate text-foreground">{client.full_name || client.username}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{client.email}</p>
                                         </div>
                                         <div className="flex gap-2 shrink-0">
                                             <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleUnlinkClient(client.id) }}>
-                                                <Trash2 className="h-4 w-4 text-red-400" />
+                                                <Trash2 className="h-4 w-4 text-destructive" />
                                             </Button>
                                         </div>
                                     </div>
@@ -212,34 +214,34 @@ export function CoachDashboard() {
 
             {selectedClient && (
                 <div id="client-details" className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 scroll-mt-20">
-                    <h3 className="text-xl font-semibold flex items-center gap-2">
-                        <Utensils className="h-5 w-5 text-orange-600 dark:text-purple-400" />
+                    <h3 className="text-xl font-semibold flex items-center gap-2 text-foreground">
+                        <Utensils className="h-5 w-5 text-lime-600 dark:text-[#CCFF00]" />
                         Viewing {selectedClient.full_name || selectedClient.username}
                     </h3>
 
                     {isLoadingData ? (
                         <div className="flex justify-center p-12">
-                            <Loader2 className="h-8 w-8 animate-spin text-orange-500 dark:text-purple-500" />
+                            <Loader2 className="h-8 w-8 animate-spin text-lime-600 dark:text-[#CCFF00]" />
                         </div>
                     ) : (
                         <Tabs defaultValue="meals">
-                            <TabsList className="w-full">
-                                <TabsTrigger value="meals" className="flex-1">Log (Meal Plan)</TabsTrigger>
-                                <TabsTrigger value="recipes" className="flex-1">Recipe Library</TabsTrigger>
+                            <TabsList className="w-full bg-muted">
+                                <TabsTrigger value="meals" className="flex-1 data-[state=active]:bg-lime-500 dark:data-[state=active]:bg-[#CCFF00] data-[state=active]:text-black">Log (Meal Plan)</TabsTrigger>
+                                <TabsTrigger value="recipes" className="flex-1 data-[state=active]:bg-lime-500 dark:data-[state=active]:bg-[#CCFF00] data-[state=active]:text-black">Recipe Library</TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="meals" className="space-y-4">
                                 {clientMeals.length === 0 ? (
-                                    <div className="text-center p-12 bg-gray-50 dark:bg-zinc-900/30 rounded-lg border border-dashed border-gray-200 dark:border-zinc-800">
-                                        <p className="text-zinc-500">No scheduled meals found.</p>
-                                        <p className="text-xs text-zinc-500 dark:text-zinc-600 mt-1">Client needs to add recipes to their "Meal Plan".</p>
+                                    <div className="text-center p-12 glass-card rounded-xl border-dashed">
+                                        <p className="text-muted-foreground">No scheduled meals found.</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Client needs to add recipes to their "Meal Plan".</p>
                                     </div>
                                 ) : (
-                                    <Card className="border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50">
+                                    <Card className="border-border bg-card">
                                         <CardContent className="p-0">
                                             <Table>
                                                 <TableHeader>
-                                                    <TableRow className="border-gray-200 dark:border-zinc-800 hover:bg-transparent">
+                                                    <TableRow className="border-border hover:bg-transparent">
                                                         <TableHead className="w-[100px]">Date</TableHead>
                                                         <TableHead className="min-w-[150px]">Meal</TableHead>
                                                         <TableHead className="min-w-[150px]">Notes</TableHead>
@@ -247,10 +249,10 @@ export function CoachDashboard() {
                                                 </TableHeader>
                                                 <TableBody>
                                                     {clientMeals.map((meal) => (
-                                                        <TableRow key={meal.id} className="border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800/30">
+                                                        <TableRow key={meal.id} className="border-border hover:bg-muted/50">
                                                             <TableCell className="font-medium whitespace-nowrap">{new Date(meal.date).toLocaleDateString()}</TableCell>
                                                             <TableCell>{meal.recipeName || "Custom Meal"}</TableCell>
-                                                            <TableCell className="text-zinc-500 dark:text-zinc-400">{meal.notes || "-"}</TableCell>
+                                                            <TableCell className="text-muted-foreground">{meal.notes || "-"}</TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -262,17 +264,17 @@ export function CoachDashboard() {
 
                             <TabsContent value="recipes" className="space-y-4">
                                 {clientRecipes.length === 0 ? (
-                                    <div className="text-center p-12 bg-gray-50 dark:bg-zinc-900/30 rounded-lg border border-dashed border-gray-200 dark:border-zinc-800">
-                                        <p className="text-zinc-500">No recipes created yet.</p>
+                                    <div className="text-center p-12 glass-card rounded-xl border-dashed">
+                                        <p className="text-muted-foreground">No recipes created yet.</p>
                                     </div>
                                 ) : (
                                     <div className="grid gap-4 md:grid-cols-2">
                                         {clientRecipes.map((recipe) => (
-                                            <Card key={recipe.id} className="border-zinc-200 dark:border-zinc-800">
+                                            <Card key={recipe.id} className="border-border bg-card">
                                                 <CardHeader className="pb-2">
                                                     <div className="flex justify-between items-start">
                                                         <CardTitle className="text-base">{recipe.title}</CardTitle>
-                                                        <div className="flex items-center gap-1 text-xs font-mono text-orange-400">
+                                                        <div className="flex items-center gap-1 text-xs font-mono text-lime-600 dark:text-[#CCFF00]">
                                                             <Dumbbell className="h-3 w-3" />
                                                             {recipe.nutritionalInfo?.protein || 0}g
                                                         </div>
@@ -282,7 +284,7 @@ export function CoachDashboard() {
                                                     </CardDescription>
                                                 </CardHeader>
                                                 <CardContent>
-                                                    <div className="flex gap-2 text-xs text-zinc-500">
+                                                    <div className="flex gap-2 text-xs text-muted-foreground">
                                                         <span className="flex items-center gap-1">
                                                             <ChefHat className="h-3 w-3" />
                                                             {recipe.difficulty}

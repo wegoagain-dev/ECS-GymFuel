@@ -96,18 +96,18 @@ export function AuthModal() {
 
     return (
         <Dialog open={isAuthModalOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md border-border bg-card">
                 <DialogHeader>
-                    <DialogTitle>Welcome to GymFuel</DialogTitle>
+                    <DialogTitle className="text-xl">Welcome to GymFuel</DialogTitle>
                     <DialogDescription>
                         Sign in to sync your meals and track your gains.
                     </DialogDescription>
                 </DialogHeader>
 
                 <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "register")}>
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="login">Sign In</TabsTrigger>
-                        <TabsTrigger value="register">Sign Up</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-2 bg-muted">
+                        <TabsTrigger value="login" className="data-[state=active]:bg-lime-500 dark:data-[state=active]:bg-[#CCFF00] data-[state=active]:text-black">Sign In</TabsTrigger>
+                        <TabsTrigger value="register" className="data-[state=active]:bg-lime-500 dark:data-[state=active]:bg-[#CCFF00] data-[state=active]:text-black">Sign Up</TabsTrigger>
                     </TabsList>
 
                     {error && (
@@ -128,6 +128,7 @@ export function AuthModal() {
                                     placeholder="you@example.com"
                                     required
                                     disabled={isLoading}
+                                    className="bg-muted border-border"
                                 />
                             </div>
 
@@ -141,15 +142,16 @@ export function AuthModal() {
                                     placeholder="••••••••"
                                     required
                                     disabled={isLoading}
+                                    className="bg-muted border-border"
                                 />
                             </div>
 
-                            <Button type="submit" className="w-full" disabled={isLoading}>
+                            <Button type="submit" className="w-full glass-button" disabled={isLoading}>
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Sign In
                             </Button>
 
-                            <p className="text-sm text-gray-600 text-center">
+                            <p className="text-sm text-muted-foreground text-center">
                                 Sync your data across devices.
                             </p>
                         </form>
@@ -167,6 +169,7 @@ export function AuthModal() {
                                     placeholder="you@example.com"
                                     required
                                     disabled={isLoading}
+                                    className="bg-muted border-border"
                                 />
                             </div>
 
@@ -180,6 +183,7 @@ export function AuthModal() {
                                     placeholder="johndoe"
                                     required
                                     disabled={isLoading}
+                                    className="bg-muted border-border"
                                 />
                             </div>
 
@@ -192,6 +196,7 @@ export function AuthModal() {
                                     onChange={(e) => setRegisterData({ ...registerData, full_name: e.target.value })}
                                     placeholder="John Doe"
                                     disabled={isLoading}
+                                    className="bg-muted border-border"
                                 />
                             </div>
 
@@ -223,6 +228,7 @@ export function AuthModal() {
                                     placeholder="••••••••"
                                     required
                                     disabled={isLoading}
+                                    className="bg-muted border-border"
                                 />
                             </div>
 
@@ -236,15 +242,16 @@ export function AuthModal() {
                                     placeholder="••••••••"
                                     required
                                     disabled={isLoading}
+                                    className="bg-muted border-border"
                                 />
                             </div>
 
-                            <Button type="submit" className="w-full" disabled={isLoading}>
+                            <Button type="submit" className="w-full glass-button" disabled={isLoading}>
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Create Account
                             </Button>
 
-                            <p className="text-sm text-gray-600 text-center">
+                            <p className="text-sm text-muted-foreground text-center">
                                 Existing meals will be synced.
                             </p>
                         </form>

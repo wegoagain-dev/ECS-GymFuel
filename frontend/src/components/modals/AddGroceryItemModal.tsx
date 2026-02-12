@@ -77,9 +77,9 @@ export function AddGroceryItemModal() {
 
     return (
         <Dialog open={isAddGroceryModalOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md border-border bg-card">
                 <DialogHeader>
-                    <DialogTitle>{itemToEdit ? "Edit Grocery Item" : "Add Grocery Item"}</DialogTitle>
+                    <DialogTitle className="text-xl">{itemToEdit ? "Edit Grocery Item" : "Add Grocery Item"}</DialogTitle>
                     <DialogDescription>
                         Track your ingredients to avoid waste.
                     </DialogDescription>
@@ -94,6 +94,7 @@ export function AddGroceryItemModal() {
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             placeholder="e.g., Milk"
                             required
+                            className="bg-muted border-border"
                         />
                     </div>
 
@@ -108,16 +109,17 @@ export function AddGroceryItemModal() {
                                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                                 placeholder="1"
                                 required
+                                className="bg-muted border-border"
                             />
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="unit">Unit</Label>
                             <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
-                                <SelectTrigger>
+                                <SelectTrigger className="bg-muted border-border">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="border-border bg-card">
                                     <SelectItem value="piece">piece</SelectItem>
                                     <SelectItem value="kg">kg</SelectItem>
                                     <SelectItem value="g">g</SelectItem>
@@ -136,10 +138,10 @@ export function AddGroceryItemModal() {
                     <div className="space-y-2">
                         <Label htmlFor="category">Category</Label>
                         <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-muted border-border">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="border-border bg-card">
                                 <SelectItem value="Dairy">Dairy</SelectItem>
                                 <SelectItem value="Meat">Meat</SelectItem>
                                 <SelectItem value="Vegetables">Vegetables</SelectItem>
@@ -160,14 +162,15 @@ export function AddGroceryItemModal() {
                             type="date"
                             value={formData.expirationDate}
                             onChange={(e) => setFormData({ ...formData, expirationDate: e.target.value })}
+                            className="bg-muted border-border"
                         />
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={handleClose}>
+                        <Button type="button" variant="outline" onClick={handleClose} className="border-border">
                             Cancel
                         </Button>
-                        <Button type="submit">{itemToEdit ? "Save Changes" : "Add Item"}</Button>
+                        <Button type="submit" className="glass-button">{itemToEdit ? "Save Changes" : "Add Item"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

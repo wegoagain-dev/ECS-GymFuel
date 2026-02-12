@@ -52,10 +52,10 @@ export function GenerateRecipeModal() {
 
     return (
         <Dialog open={isGenerateAIModalOpen} onOpenChange={setGenerateAIModalOpen}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg border-border bg-card">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-yellow-500" />
+                    <DialogTitle className="flex items-center gap-2 text-xl">
+                        <Sparkles className="h-5 w-5 text-cyan-500" />
                         AI Recipe Generator
                     </DialogTitle>
                     <DialogDescription>
@@ -64,19 +64,19 @@ export function GenerateRecipeModal() {
                 </DialogHeader>
 
                 <div className="py-8 text-center space-y-4">
-                    <div className="mx-auto w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center">
-                        <Sparkles className="h-8 w-8 text-orange-500" />
+                    <div className="mx-auto w-16 h-16 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                        <Sparkles className="h-8 w-8 text-cyan-500" />
                     </div>
                     <div className="space-y-2">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">Coming Soon</h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm mx-auto">
+                        <h3 className="text-xl font-bold text-foreground">Coming Soon</h3>
+                        <p className="text-muted-foreground text-sm max-w-sm mx-auto">
                             We&apos;re building an AI-powered recipe generator that creates personalised meals based on your fitness goals and dietary preferences.
                         </p>
                     </div>
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setGenerateAIModalOpen(false)} className="w-full">
+                    <Button variant="outline" onClick={() => setGenerateAIModalOpen(false)} className="w-full border-border">
                         Close
                     </Button>
                 </DialogFooter>

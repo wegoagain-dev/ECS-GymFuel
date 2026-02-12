@@ -66,9 +66,9 @@ export function AddRecipeModal() {
 
     return (
         <Dialog open={isAddRecipeModalOpen} onOpenChange={setAddRecipeModalOpen}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] border-border bg-card">
                 <DialogHeader>
-                    <DialogTitle>Add New Meal</DialogTitle>
+                    <DialogTitle className="text-xl">Add New Meal</DialogTitle>
                     <DialogDescription>
                         Add a high-protein meal to your collection.
                     </DialogDescription>
@@ -82,6 +82,7 @@ export function AddRecipeModal() {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
+                            className="bg-muted border-border"
                         />
                     </div>
 
@@ -95,9 +96,9 @@ export function AddRecipeModal() {
                                 value={protein}
                                 onChange={(e) => setProtein(e.target.value)}
                                 required
-                                className="pr-8"
+                                className="pr-8 bg-muted border-border"
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">g</span>
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-mono">g</span>
                         </div>
                     </div>
 
@@ -108,6 +109,7 @@ export function AddRecipeModal() {
                             placeholder="Brief description..."
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
+                            className="bg-muted border-border"
                         />
                     </div>
 
@@ -118,14 +120,15 @@ export function AddRecipeModal() {
                             placeholder="Lunch, Bulking, Quick"
                             value={tags}
                             onChange={(e) => setTags(e.target.value)}
+                            className="bg-muted border-border"
                         />
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setAddRecipeModalOpen(false)}>
+                        <Button type="button" variant="outline" onClick={() => setAddRecipeModalOpen(false)} className="border-border">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className="glass-button">
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Save Meal
                         </Button>

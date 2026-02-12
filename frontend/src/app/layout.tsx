@@ -18,16 +18,22 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,301,701,300,501,401,901,400&display=swap" rel="stylesheet" />
+        {/* Clash Display - Bold, athletic display font */}
+        <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700,500,400&display=swap" rel="stylesheet" />
+        {/* Satoshi - Clean, modern body font */}
+        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+        {/* JetBrains Mono - For numbers and data */}
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
         <style>{`
-          body { font-family: 'Satoshi', sans-serif; }
-          h1, h2, h3, h4, h5, h6 { font-family: 'Satoshi', sans-serif; }
+          body { font-family: 'Satoshi', system-ui, sans-serif; }
+          h1, h2, h3 { font-family: 'Clash Display', 'Satoshi', system-ui, sans-serif; font-weight: 600; }
+          .font-mono, code { font-family: 'JetBrains Mono', monospace; }
         `}</style>
       </head>
       <body className="antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

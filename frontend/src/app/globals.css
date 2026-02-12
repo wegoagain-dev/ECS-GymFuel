@@ -2,51 +2,66 @@
 
 @variant dark (&:where(.dark, .dark *));
 
-/* === CSS Variables for Theme === */
+/* === GYMFUEL "ELECTRIC IRON" THEME === */
+/* Athletic, powerful, high-energy aesthetic */
+
 :root {
-  --background: #ffffff;
+  /* Light mode - clean with electric accents */
+  --background: #fafafa;
   --foreground: #0a0a0a;
   --card: #ffffff;
   --card-foreground: #0a0a0a;
   --popover: #ffffff;
   --popover-foreground: #0a0a0a;
-  --primary: #f97316;
-  --primary-foreground: #fafafa;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
+  --primary: #84cc16; /* Lime green - energy, growth, vitality */
+  --primary-foreground: #0a0a0a;
+  --secondary: #18181b;
+  --secondary-foreground: #fafafa;
   --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
-  --destructive: #ef4444;
+  --muted-foreground: #52525b;
+  --accent: #22d3ee; /* Cyan accent - electric, modern */
+  --accent-foreground: #0a0a0a;
+  --destructive: #dc2626;
   --destructive-foreground: #fafafa;
   --border: #e4e4e7;
   --input: #e4e4e7;
-  --ring: #f97316;
-  --radius: 0.75rem;
+  --ring: #84cc16;
+  --radius: 0.5rem;
+
+  /* Custom theme colors */
+  --lime: #CCFF00;
+  --lime-glow: rgba(204, 255, 0, 0.4);
+  --cyan: #22d3ee;
+  --iron: #27272a;
 }
 
 .dark {
-  --background: #050505;
+  /* Dark mode - the star of the show */
+  --background: #0a0a0a;
   --foreground: #fafafa;
-  --card: #0c0c0c;
+  --card: #141414;
   --card-foreground: #fafafa;
-  --popover: #0c0c0c;
+  --popover: #141414;
   --popover-foreground: #fafafa;
-  --primary: #f97316;
-  --primary-foreground: #fafafa;
-  --secondary: #1c1c1e;
+  --primary: #CCFF00; /* Electric lime - HIGH ENERGY */
+  --primary-foreground: #0a0a0a;
+  --secondary: #1f1f1f;
   --secondary-foreground: #fafafa;
-  --muted: #1c1c1e;
+  --muted: #262626;
   --muted-foreground: #a1a1aa;
-  --accent: #1c1c1e;
-  --accent-foreground: #fafafa;
-  --destructive: #7f1d1d;
+  --accent: #22d3ee;
+  --accent-foreground: #0a0a0a;
+  --destructive: #ef4444;
   --destructive-foreground: #fafafa;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #f97316;
+  --border: #262626;
+  --input: #262626;
+  --ring: #CCFF00;
   color-scheme: dark;
+
+  --lime: #CCFF00;
+  --lime-glow: rgba(204, 255, 0, 0.3);
+  --cyan: #22d3ee;
+  --iron: #1f1f1f;
 }
 
 /* === Tailwind Theme Integration === */
@@ -74,8 +89,11 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Clash Display', 'Satoshi', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-lime: var(--lime);
+  --color-cyan: var(--cyan);
+  --color-iron: var(--iron);
 }
 
 /* === Global Styles === */
@@ -89,53 +107,143 @@ body {
   overflow-x: hidden;
 }
 
+/* Subtle noise texture for depth */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.015;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.dark body::before {
+  opacity: 0.03;
+}
+
 /* === Custom Utility Classes === */
+
+/* Athletic glass effect - sharp, modern */
 @utility glass {
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .dark .glass {
-  background-color: rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(20, 20, 20, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
+/* Iron card - solid, industrial */
 @utility glass-card {
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.04);
 }
 
 .dark .glass-card {
-  background-color: rgba(24, 24, 27, 0.4);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  background-color: #141414;
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
+/* High-energy CTA button */
 @utility glass-button {
-  background-color: rgba(249, 115, 22, 0.9);
-  color: white;
-  box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.2);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transition: all 0.2s;
+  background: linear-gradient(135deg, var(--lime) 0%, #a3e635 100%);
+  color: #0a0a0a;
+  font-weight: 600;
+  box-shadow:
+    0 0 20px var(--lime-glow),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 .glass-button:hover {
-  background-color: rgb(249, 115, 22);
+  background: linear-gradient(135deg, #d4ff00 0%, #bef264 100%);
+  box-shadow:
+    0 0 30px var(--lime-glow),
+    0 8px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
 .glass-button:active {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.98);
 }
 
+/* Power gradient text */
 @utility text-gradient {
-  background-image: linear-gradient(to right, #f97316, #f59e0b);
+  background-image: linear-gradient(135deg, var(--lime) 0%, var(--cyan) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Lime glow effect for emphasis */
+@utility lime-glow {
+  box-shadow: 0 0 20px var(--lime-glow);
+}
+
+/* Iron surface - subtle metallic feel */
+@utility iron-surface {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+}
+
+/* Protein badge - signature element */
+@utility protein-badge {
+  background: linear-gradient(135deg, rgba(204, 255, 0, 0.15) 0%, rgba(34, 211, 238, 0.1) 100%);
+  border: 1px solid rgba(204, 255, 0, 0.3);
+  color: var(--lime);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Selection color */
+::selection {
+  background: rgba(204, 255, 0, 0.3);
+  color: inherit;
+}
+
+/* Focus ring styling */
+*:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
 }
