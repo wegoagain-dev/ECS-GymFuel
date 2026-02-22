@@ -38,7 +38,6 @@ export function AddToMealPlanModal() {
             // Ideally, we should pick a real date. Let's pick the NEXT occurrence of this day.
 
             const today = new Date()
-            const targetDayIndex = DAYS.indexOf(day) + 1 // 1-7 (Mon-Sun) if we map properly?
             // Actually JS getDay() is 0=Sun, 1=Mon.
             // Let's stick to simple day names for now if the Meal type allows, 
             // BUT Meal interface asks for `date: string` (ISO).
@@ -48,7 +47,7 @@ export function AddToMealPlanModal() {
             const targetDayIndexAdjusted = DAYS.indexOf(day) + 1
 
             let daysToAdd = targetDayIndexAdjusted - currentDayIndex
-            if (daysToAdd <= 0) {
+            if (daysToAdd < 0) {
                 daysToAdd += 7
             }
 
@@ -78,25 +77,31 @@ export function AddToMealPlanModal() {
 
     return (
         <Dialog open={isAddToMealPlanModalOpen} onOpenChange={setAddToMealPlanModalOpen}>
-            <DialogContent className="max-w-sm border-border bg-card">
-                <DialogHeader>
+            <DialogContent className="max-w-sm border-white/20 bg-[#131a2c]/92">
+                <DialogHeader className="pr-8">
                     <DialogTitle className="flex items-center gap-2 text-xl">
-                        <Calendar className="h-5 w-5 text-lime-600 dark:text-[#CCFF00]" />
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 border border-blue-300/25">
+                            <Calendar className="h-4 w-4 text-blue-300" />
+                        </span>
                         Add to Meal Plan
                     </DialogTitle>
                     <DialogDescription>
                         Schedule <strong>{selectedRecipeForPlan.title}</strong> for the week.
                     </DialogDescription>
                 </DialogHeader>
+                <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-blue-600/15 to-violet-500/10 px-4 py-3">
+                    <p className="text-xs uppercase tracking-wider text-white/60">Planning</p>
+                    <p className="text-sm text-white/85">Pick a day and meal slot. GymFuel will place it into your weekly view.</p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                        <Label>Day of the Week</Label>
+                        <Label className="text-xs uppercase tracking-wider text-slate-300">Day of the Week</Label>
                         <Select value={day} onValueChange={setDay}>
-                            <SelectTrigger className="bg-muted border-border">
+                            <SelectTrigger className="bg-white/5 border-white/15">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="border-border bg-card">
+                            <SelectContent className="border-white/15 bg-[#1a2133]/80">
                                 {DAYS.map(d => (
                                     <SelectItem key={d} value={d}>{d}</SelectItem>
                                 ))}
@@ -105,12 +110,12 @@ export function AddToMealPlanModal() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Meal Type</Label>
+                        <Label className="text-xs uppercase tracking-wider text-slate-300">Meal Type</Label>
                         <Select value={mealType} onValueChange={setMealType}>
-                            <SelectTrigger className="bg-muted border-border">
+                            <SelectTrigger className="bg-white/5 border-white/15">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="border-border bg-card">
+                            <SelectContent className="border-white/15 bg-[#1a2133]/80">
                                 {MEAL_TYPES.map(t => (
                                     <SelectItem key={t} value={t}>{t}</SelectItem>
                                 ))}
@@ -119,10 +124,10 @@ export function AddToMealPlanModal() {
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setAddToMealPlanModalOpen(false)} className="border-border">
+                        <Button type="button" variant="outline" onClick={() => setAddToMealPlanModalOpen(false)} className="border-white/15 rounded-xl w-full sm:w-auto">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading} className="glass-button">
+                        <Button type="submit" disabled={isLoading} className="glass-button rounded-xl w-full sm:w-auto">
                             {isLoading ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (

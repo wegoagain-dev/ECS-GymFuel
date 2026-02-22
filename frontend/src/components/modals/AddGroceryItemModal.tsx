@@ -9,10 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStore } from "@/lib/store"
 import { generateId } from "@/lib/storage"
 import { GroceryItem } from "@/lib/types"
+import { ShoppingBag } from "lucide-react"
 
 export function AddGroceryItemModal() {
     const { isAddGroceryModalOpen, setAddGroceryModalOpen, addGroceryItem, updateGroceryItem, itemToEdit, setItemToEdit } = useStore()
-
     const [formData, setFormData] = useState({
         name: "",
         quantity: "",
@@ -22,23 +22,21 @@ export function AddGroceryItemModal() {
     })
 
     useEffect(() => {
-        if (itemToEdit) {
-            setFormData({
-                name: itemToEdit.name,
-                quantity: itemToEdit.quantity.toString(),
-                unit: itemToEdit.unit,
-                category: itemToEdit.category,
-                expirationDate: itemToEdit.expirationDate || "",
-            })
-        } else {
-            setFormData({
-                name: "",
-                quantity: "",
-                unit: "piece",
-                category: "Other",
-                expirationDate: "",
-            })
-        }
+        // Sync modal form state from selected item when opening edit mode.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setFormData(itemToEdit ? {
+            name: itemToEdit.name,
+            quantity: itemToEdit.quantity.toString(),
+            unit: itemToEdit.unit,
+            category: itemToEdit.category,
+            expirationDate: itemToEdit.expirationDate || "",
+        } : {
+            name: "",
+            quantity: "",
+            unit: "piece",
+            category: "Other",
+            expirationDate: "",
+        })
     }, [itemToEdit])
 
     const handleClose = () => {
@@ -77,30 +75,39 @@ export function AddGroceryItemModal() {
 
     return (
         <Dialog open={isAddGroceryModalOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-md border-border bg-card">
-                <DialogHeader>
-                    <DialogTitle className="text-xl">{itemToEdit ? "Edit Grocery Item" : "Add Grocery Item"}</DialogTitle>
+            <DialogContent className="max-w-md border-white/20 bg-[#131a2c]/92">
+                <DialogHeader className="pr-8">
+                    <DialogTitle className="text-xl flex items-center gap-2">
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 border border-cyan-300/25">
+                            <ShoppingBag className="h-4 w-4 text-cyan-300" />
+                        </span>
+                        {itemToEdit ? "Edit Grocery Item" : "Add Grocery Item"}
+                    </DialogTitle>
                     <DialogDescription>
                         Track your ingredients to avoid waste.
                     </DialogDescription>
                 </DialogHeader>
+                <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-4 py-3">
+                    <p className="text-xs uppercase tracking-wider text-white/60">Shelf Life</p>
+                    <p className="text-sm text-white/85">Adding expiry dates helps GymFuel flag urgent items before they spoil.</p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Item Name *</Label>
+                        <Label htmlFor="name" className="text-xs uppercase tracking-wider text-slate-300">Item Name *</Label>
                         <Input
                             id="name"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             placeholder="e.g., Milk"
                             required
-                            className="bg-muted border-border"
+                            className="bg-white/5 border-white/15"
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="quantity">Quantity *</Label>
+                            <Label htmlFor="quantity" className="text-xs uppercase tracking-wider text-slate-300">Quantity *</Label>
                             <Input
                                 id="quantity"
                                 type="number"
@@ -109,17 +116,17 @@ export function AddGroceryItemModal() {
                                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                                 placeholder="1"
                                 required
-                                className="bg-muted border-border"
+                                className="bg-white/5 border-white/15"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="unit">Unit</Label>
+                            <Label htmlFor="unit" className="text-xs uppercase tracking-wider text-slate-300">Unit</Label>
                             <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
-                                <SelectTrigger className="bg-muted border-border">
+                                <SelectTrigger className="bg-white/5 border-white/15">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="border-border bg-card">
+                                <SelectContent className="border-white/15 bg-[#1a2133]/80">
                                     <SelectItem value="piece">piece</SelectItem>
                                     <SelectItem value="kg">kg</SelectItem>
                                     <SelectItem value="g">g</SelectItem>
@@ -136,12 +143,12 @@ export function AddGroceryItemModal() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="category">Category</Label>
+                        <Label htmlFor="category" className="text-xs uppercase tracking-wider text-slate-300">Category</Label>
                         <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                            <SelectTrigger className="bg-muted border-border">
+                            <SelectTrigger className="bg-white/5 border-white/15">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="border-border bg-card">
+                            <SelectContent className="border-white/15 bg-[#1a2133]/80">
                                 <SelectItem value="Dairy">Dairy</SelectItem>
                                 <SelectItem value="Meat">Meat</SelectItem>
                                 <SelectItem value="Vegetables">Vegetables</SelectItem>
@@ -156,21 +163,21 @@ export function AddGroceryItemModal() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="expirationDate">Expiration Date (optional)</Label>
+                        <Label htmlFor="expirationDate" className="text-xs uppercase tracking-wider text-slate-300">Expiration Date (optional)</Label>
                         <Input
                             id="expirationDate"
                             type="date"
                             value={formData.expirationDate}
                             onChange={(e) => setFormData({ ...formData, expirationDate: e.target.value })}
-                            className="bg-muted border-border"
+                            className="bg-white/5 border-white/15"
                         />
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={handleClose} className="border-border">
+                        <Button type="button" variant="outline" onClick={handleClose} className="border-white/15 rounded-xl w-full sm:w-auto">
                             Cancel
                         </Button>
-                        <Button type="submit" className="glass-button">{itemToEdit ? "Save Changes" : "Add Item"}</Button>
+                        <Button type="submit" className="glass-button rounded-xl w-full sm:w-auto">{itemToEdit ? "Save Changes" : "Add Item"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

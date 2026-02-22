@@ -12,12 +12,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Plus, Users, Trash2, Utensils, ChefHat, Dumbbell } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 export function CoachDashboard() {
     const { user } = useStore()
     const [clients, setClients] = useState<ClientSummary[]>([])
     const [isLoadingClients, setIsLoadingClients] = useState(false)
     const [selectedClient, setSelectedClient] = useState<ClientSummary | null>(null)
+    const [clientToUnlink, setClientToUnlink] = useState<ClientSummary | null>(null)
     const [clientMeals, setClientMeals] = useState<Meal[]>([])
     const [clientRecipes, setClientRecipes] = useState<Recipe[]>([])
     const [isLoadingData, setIsLoadingData] = useState(false)
@@ -84,8 +86,6 @@ export function CoachDashboard() {
     }
 
     const handleUnlinkClient = async (clientId: number) => {
-        if (!confirm("Are you sure you want to unlink this client?")) return
-
         try {
             await api.unlinkClient(clientId)
             loadClients()
@@ -96,6 +96,38 @@ export function CoachDashboard() {
             }
         } catch (error) {
             console.error("Failed to unlink client:", error)
+        } finally {
+            setClientToUnlink(null)
+        }
+    }
+
+    const getCurrentWeekBounds = () => {
+        const now = new Date()
+        const start = new Date(now)
+        const day = start.getDay() || 7
+        start.setDate(start.getDate() - (day - 1))
+        start.setHours(0, 0, 0, 0)
+        const end = new Date(start)
+        end.setDate(start.getDate() + 6)
+        end.setHours(23, 59, 59, 999)
+        return { start, end }
+    }
+
+    const getClientWeekSnapshot = () => {
+        const { start, end } = getCurrentWeekBounds()
+        const weekMeals = clientMeals.filter((meal) => {
+            const d = new Date(`${meal.date}T12:00:00`)
+            return d >= start && d <= end
+        })
+        const plannedDays = new Set(weekMeals.map((m) => m.date)).size
+        const recipesWithProtein = clientRecipes.filter((r) => (r.nutritionalInfo?.protein || 0) > 0).length
+        const coverage = Math.round((plannedDays / 7) * 100)
+
+        return {
+            plannedMeals: weekMeals.length,
+            plannedDays,
+            recipesWithProtein,
+            coverage,
         }
     }
 
@@ -110,7 +142,7 @@ export function CoachDashboard() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground">Coach Dashboard</h2>
@@ -118,11 +150,29 @@ export function CoachDashboard() {
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-                <Card className="md:col-span-1 border-border bg-card">
+            <div className="glass-card overflow-hidden rounded-3xl border border-white/15">
+                <div className="grid md:grid-cols-[1.2fr_1fr]">
+                    <div className="p-6 space-y-3">
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">Coach Overview</p>
+                        <h3 className="text-xl font-semibold text-foreground">Client nutrition snapshots in one place.</h3>
+                        <p className="text-sm text-muted-foreground">Link clients, review plans, and keep accountability high with faster weekly check-ins.</p>
+                    </div>
+                    <div className="image-surface relative min-h-[180px] m-3 md:m-4">
+                        <img
+                            src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&auto=format&fit=crop&q=60"
+                            alt="Coach planning session"
+                            className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#0f1220]/70 to-transparent" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5 md:gap-8">
+                <Card className="md:col-span-1 border-white/15 bg-[#1a2133]/80">
                     <CardHeader>
                         <CardTitle>Link New Client</CardTitle>
-                        <CardDescription>Enter client's email and their unique code.</CardDescription>
+                        <CardDescription>Enter client&apos;s email and their unique code.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleAddClient} className="space-y-4">
@@ -143,7 +193,7 @@ export function CoachDashboard() {
                                     onChange={(e) => setAddClientEmail(e.target.value)}
                                     placeholder="client@example.com"
                                     required
-                                    className="bg-muted border-border"
+                                    className="bg-white/5 border-white/15"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -153,7 +203,7 @@ export function CoachDashboard() {
                                     onChange={(e) => setAddClientCode(e.target.value)}
                                     placeholder="e.g. A1B2C3D4"
                                     required
-                                    className="bg-muted border-border"
+                                    className="bg-white/5 border-white/15"
                                 />
                             </div>
                             <Button className="w-full glass-button" type="submit" disabled={isAddingClient}>
@@ -164,7 +214,7 @@ export function CoachDashboard() {
                     </CardContent>
                 </Card>
 
-                <Card className="md:col-span-1 border-border bg-card">
+                <Card className="md:col-span-1 border-white/15 bg-[#1a2133]/80">
                     <CardHeader>
                         <CardTitle>My Clients</CardTitle>
                         <CardDescription>Select a client to view their meal plan.</CardDescription>
@@ -175,7 +225,7 @@ export function CoachDashboard() {
                                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                             </div>
                         ) : clients.length === 0 ? (
-                            <div className="text-center p-8 text-muted-foreground border border-dashed border-border rounded-lg">
+                            <div className="text-center p-8 text-muted-foreground border border-dashed border-white/15 rounded-lg">
                                 <p>No clients linked yet.</p>
                             </div>
                         ) : (
@@ -183,9 +233,9 @@ export function CoachDashboard() {
                                 {clients.map((client) => (
                                     <div
                                         key={client.id}
-                                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${selectedClient?.id === client.id
-                                            ? "bg-lime-500/10 border-lime-500/50 dark:bg-[#CCFF00]/10 dark:border-[#CCFF00]/50"
-                                            : "bg-muted/50 border-border hover:border-lime-500/30 dark:hover:border-[#CCFF00]/30"
+                                        className={`flex items-center justify-between gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedClient?.id === client.id
+                                            ? "bg-blue-500/15 border-blue-300/45"
+                                            : "bg-white/5 border-white/15 hover:border-blue-300/35"
                                             }`}
                                         onClick={() => {
                                             handleViewClient(client)
@@ -195,12 +245,12 @@ export function CoachDashboard() {
                                             }, 100)
                                         }}
                                     >
-                                        <div className="min-w-0 mr-2">
+                                        <div className="min-w-0 flex-1">
                                             <p className="font-medium truncate text-foreground">{client.full_name || client.username}</p>
                                             <p className="text-xs text-muted-foreground truncate">{client.email}</p>
                                         </div>
                                         <div className="flex gap-2 shrink-0">
-                                            <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleUnlinkClient(client.id) }}>
+                                            <Button variant="ghost" size="sm" className="rounded-lg" onClick={(e) => { e.stopPropagation(); setClientToUnlink(client) }}>
                                                 <Trash2 className="h-4 w-4 text-destructive" />
                                             </Button>
                                         </div>
@@ -214,51 +264,102 @@ export function CoachDashboard() {
 
             {selectedClient && (
                 <div id="client-details" className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 scroll-mt-20">
+                    {(() => {
+                        const snapshot = getClientWeekSnapshot()
+                        return (
+                            <div className="glass-card rounded-2xl border border-white/15 p-4">
+                                <div className="mb-3 flex items-center justify-between gap-3">
+                                    <div>
+                                        <p className="text-xs uppercase tracking-wider text-muted-foreground">Weekly Compliance Snapshot</p>
+                                        <p className="text-sm text-foreground">Signals from planned meals and recipe library.</p>
+                                    </div>
+                                    <div className={`rounded-full px-2.5 py-1 text-[10px] uppercase tracking-wider border ${snapshot.coverage >= 70
+                                        ? "border-emerald-300/30 bg-emerald-500/15 text-emerald-100"
+                                        : snapshot.coverage >= 40
+                                            ? "border-amber-300/30 bg-amber-500/15 text-amber-100"
+                                            : "border-rose-300/30 bg-rose-500/15 text-rose-100"
+                                        }`}>
+                                        {snapshot.coverage}% day coverage
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-2.5">
+                                    <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">
+                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Planned Meals</p>
+                                        <p className="mt-1 text-lg font-semibold text-foreground">{snapshot.plannedMeals}</p>
+                                    </div>
+                                    <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">
+                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Active Days</p>
+                                        <p className="mt-1 text-lg font-semibold text-foreground">{snapshot.plannedDays}/7</p>
+                                    </div>
+                                    <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">
+                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Protein Recipes</p>
+                                        <p className="mt-1 text-lg font-semibold text-foreground">{snapshot.recipesWithProtein}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })()}
+
                     <h3 className="text-xl font-semibold flex items-center gap-2 text-foreground">
-                        <Utensils className="h-5 w-5 text-lime-600 dark:text-[#CCFF00]" />
+                        <Utensils className="h-5 w-5 text-blue-300" />
                         Viewing {selectedClient.full_name || selectedClient.username}
                     </h3>
 
                     {isLoadingData ? (
                         <div className="flex justify-center p-12">
-                            <Loader2 className="h-8 w-8 animate-spin text-lime-600 dark:text-[#CCFF00]" />
+                            <Loader2 className="h-8 w-8 animate-spin text-blue-300" />
                         </div>
                     ) : (
-                        <Tabs defaultValue="meals">
-                            <TabsList className="w-full bg-muted">
-                                <TabsTrigger value="meals" className="flex-1 data-[state=active]:bg-lime-500 dark:data-[state=active]:bg-[#CCFF00] data-[state=active]:text-black">Log (Meal Plan)</TabsTrigger>
-                                <TabsTrigger value="recipes" className="flex-1 data-[state=active]:bg-lime-500 dark:data-[state=active]:bg-[#CCFF00] data-[state=active]:text-black">Recipe Library</TabsTrigger>
+                        <Tabs defaultValue="meals" className="space-y-4">
+                            <TabsList className="w-full h-auto grid grid-cols-2 gap-1 bg-white/5 border-white/20">
+                                <TabsTrigger value="meals" className="mobile-dock-trigger min-h-10 text-xs sm:text-sm data-[state=active]:bg-blue-600 data-[state=active]:text-white">Log (Meal Plan)</TabsTrigger>
+                                <TabsTrigger value="recipes" className="mobile-dock-trigger min-h-10 text-xs sm:text-sm data-[state=active]:bg-blue-600 data-[state=active]:text-white">Recipe Library</TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="meals" className="space-y-4">
                                 {clientMeals.length === 0 ? (
                                     <div className="text-center p-12 glass-card rounded-xl border-dashed">
                                         <p className="text-muted-foreground">No scheduled meals found.</p>
-                                        <p className="text-xs text-muted-foreground mt-1">Client needs to add recipes to their "Meal Plan".</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Client needs to add recipes to their &quot;Meal Plan&quot;.</p>
                                     </div>
                                 ) : (
-                                    <Card className="border-border bg-card">
-                                        <CardContent className="p-0">
-                                            <Table>
-                                                <TableHeader>
-                                                    <TableRow className="border-border hover:bg-transparent">
-                                                        <TableHead className="w-[100px]">Date</TableHead>
-                                                        <TableHead className="min-w-[150px]">Meal</TableHead>
-                                                        <TableHead className="min-w-[150px]">Notes</TableHead>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {clientMeals.map((meal) => (
-                                                        <TableRow key={meal.id} className="border-border hover:bg-muted/50">
-                                                            <TableCell className="font-medium whitespace-nowrap">{new Date(meal.date).toLocaleDateString()}</TableCell>
-                                                            <TableCell>{meal.recipeName || "Custom Meal"}</TableCell>
-                                                            <TableCell className="text-muted-foreground">{meal.notes || "-"}</TableCell>
+                                    <>
+                                        <div className="space-y-2 md:hidden">
+                                            {clientMeals.map((meal) => (
+                                                <div key={meal.id} className="rounded-xl border border-white/15 bg-white/5 p-3">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <p className="text-xs uppercase tracking-wider text-muted-foreground">{new Date(meal.date).toLocaleDateString()}</p>
+                                                        <span className="text-[10px] rounded-md bg-blue-500/20 text-blue-200 px-2 py-0.5 uppercase tracking-wide">{meal.mealType}</span>
+                                                    </div>
+                                                    <p className="mt-1 text-sm font-medium text-foreground">{meal.recipeName || "Custom Meal"}</p>
+                                                    {meal.notes && <p className="mt-1 text-xs text-muted-foreground">{meal.notes}</p>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <Card className="hidden md:block border-white/15 bg-[#1a2133]/80">
+                                            <CardContent className="p-0">
+                                                <Table>
+                                                    <TableHeader>
+                                                        <TableRow className="border-white/15 hover:bg-transparent">
+                                                            <TableHead className="w-[100px]">Date</TableHead>
+                                                            <TableHead className="min-w-[150px]">Meal</TableHead>
+                                                            <TableHead className="min-w-[150px]">Notes</TableHead>
                                                         </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </CardContent>
-                                    </Card>
+                                                    </TableHeader>
+                                                    <TableBody>
+                                                        {clientMeals.map((meal) => (
+                                                            <TableRow key={meal.id} className="border-white/15 hover:bg-white/5">
+                                                                <TableCell className="font-medium whitespace-nowrap">{new Date(meal.date).toLocaleDateString()}</TableCell>
+                                                                <TableCell>{meal.recipeName || "Custom Meal"}</TableCell>
+                                                                <TableCell className="text-muted-foreground">{meal.notes || "-"}</TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </CardContent>
+                                        </Card>
+                                    </>
                                 )}
                             </TabsContent>
 
@@ -270,11 +371,11 @@ export function CoachDashboard() {
                                 ) : (
                                     <div className="grid gap-4 md:grid-cols-2">
                                         {clientRecipes.map((recipe) => (
-                                            <Card key={recipe.id} className="border-border bg-card">
+                                            <Card key={recipe.id} className="border-white/15 bg-[#1a2133]/80">
                                                 <CardHeader className="pb-2">
                                                     <div className="flex justify-between items-start">
                                                         <CardTitle className="text-base">{recipe.title}</CardTitle>
-                                                        <div className="flex items-center gap-1 text-xs font-mono text-lime-600 dark:text-[#CCFF00]">
+                                                        <div className="flex items-center gap-1 text-xs font-mono text-blue-300">
                                                             <Dumbbell className="h-3 w-3" />
                                                             {recipe.nutritionalInfo?.protein || 0}g
                                                         </div>
@@ -302,6 +403,26 @@ export function CoachDashboard() {
                     )}
                 </div>
             )}
+            <Dialog open={!!clientToUnlink} onOpenChange={(open) => !open && setClientToUnlink(null)}>
+                <DialogContent className="max-w-sm border-white/15 bg-[#1a2133]/80">
+                    <DialogHeader>
+                        <DialogTitle>Unlink Client?</DialogTitle>
+                        <DialogDescription>
+                            {clientToUnlink
+                                ? `Are you sure you want to unlink ${clientToUnlink.full_name || clientToUnlink.username}?`
+                                : "Are you sure you want to unlink this client?"}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" className="border-white/15" onClick={() => setClientToUnlink(null)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={() => clientToUnlink && handleUnlinkClient(clientToUnlink.id)}>
+                            Unlink
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

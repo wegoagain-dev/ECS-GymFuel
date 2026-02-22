@@ -72,7 +72,20 @@ class ApiClient {
             throw new Error(error.detail || 'Request failed')
         }
 
-        return response.json()
+        if (response.status === 204) {
+            return undefined as T
+        }
+
+        const text = await response.text()
+        if (!text) {
+            return undefined as T
+        }
+
+        try {
+            return JSON.parse(text) as T
+        } catch {
+            return text as T
+        }
     }
 
     // Auth endpoints
@@ -383,6 +396,12 @@ class ApiClient {
                 createdAt: response.recipe.created_at
             } : undefined
         }
+    }
+
+    async deleteMeal(id: string) {
+        return this.request<{ message: string }>(`/api/meals/${id}`, {
+            method: 'DELETE',
+        })
     }
 
     // ============ Coach Endpoints ============

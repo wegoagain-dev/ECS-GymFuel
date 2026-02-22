@@ -52,10 +52,12 @@ export function GenerateRecipeModal() {
 
     return (
         <Dialog open={isGenerateAIModalOpen} onOpenChange={setGenerateAIModalOpen}>
-            <DialogContent className="max-w-lg border-border bg-card">
-                <DialogHeader>
+            <DialogContent className="max-w-lg border-white/20 bg-[#131a2c]/92">
+                <DialogHeader className="pr-8">
                     <DialogTitle className="flex items-center gap-2 text-xl">
-                        <Sparkles className="h-5 w-5 text-cyan-500" />
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 border border-cyan-300/25">
+                            <Sparkles className="h-4 w-4 text-cyan-300" />
+                        </span>
                         AI Recipe Generator
                     </DialogTitle>
                     <DialogDescription>
@@ -63,23 +65,53 @@ export function GenerateRecipeModal() {
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="py-8 text-center space-y-4">
-                    <div className="mx-auto w-16 h-16 rounded-xl bg-cyan-500/10 flex items-center justify-center">
-                        <Sparkles className="h-8 w-8 text-cyan-500" />
-                    </div>
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-bold text-foreground">Coming Soon</h3>
-                        <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                            We&apos;re building an AI-powered recipe generator that creates personalised meals based on your fitness goals and dietary preferences.
-                        </p>
-                    </div>
+                <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/12 to-blue-500/10 px-4 py-3">
+                    <p className="text-xs uppercase tracking-wider text-white/60">AI Assistant</p>
+                    <p className="text-sm text-white/85">Describe your goal and GymFuel will generate a recipe suggestion with macros.</p>
                 </div>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => setGenerateAIModalOpen(false)} className="w-full border-border">
-                        Close
-                    </Button>
-                </DialogFooter>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {error && (
+                        <div className="rounded-xl border border-rose-300/30 bg-rose-500/15 px-3 py-2 text-sm text-rose-100">
+                            {error}
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        <Label htmlFor="ai-prompt" className="text-xs uppercase tracking-wider text-slate-300">Goal or meal idea</Label>
+                        <Input
+                            id="ai-prompt"
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            placeholder="e.g. 40g protein post-workout dinner"
+                            className="bg-white/5 border-white/15"
+                            disabled={isLoading}
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="ai-restrictions" className="text-xs uppercase tracking-wider text-slate-300">Dietary restrictions (optional)</Label>
+                        <Input
+                            id="ai-restrictions"
+                            value={dietaryRestrictions}
+                            onChange={(e) => setDietaryRestrictions(e.target.value)}
+                            placeholder="e.g. dairy-free, low carb"
+                            className="bg-white/5 border-white/15"
+                            disabled={isLoading}
+                        />
+                    </div>
+
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setGenerateAIModalOpen(false)} className="border-white/15 rounded-xl w-full sm:w-auto">
+                            Cancel
+                        </Button>
+                        <Button type="submit" className="glass-button rounded-xl w-full sm:w-auto" disabled={isLoading || !prompt.trim()}>
+                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                            Generate
+                        </Button>
+                    </DialogFooter>
+                </form>
             </DialogContent>
         </Dialog>
     )

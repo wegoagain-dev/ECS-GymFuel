@@ -33,13 +33,7 @@ export function EditMealDialog({ isOpen, onOpenChange, meal }: EditMealModalProp
             setMealType(meal.mealType)
             setNotes(meal.notes || "")
             // Determine Day from Date
-            const d = new Date(meal.date)
-            // Fix timezone offset issue if necessary, or just rely on local date
-            // Date string "YYYY-MM-DD" usually parses as UTC midnight, which might be day-before in some TZs
-            // Using a simple array map assuming meal.date is correct string:
-            const dayIndex = d.getDay() || 7 // 1=Mon, 7=Sun
-            // Wait, d.getDay() depends on local time vs UTC. 
-            // Better to parse YYYY-MM-DD explicitly.
+            // Parse YYYY-MM-DD explicitly to avoid timezone shifts.
             const [y, m, dateDay] = meal.date.split('-').map(Number)
             const localDate = new Date(y, m - 1, dateDay)
             const dayName = localDate.toLocaleDateString('en-US', { weekday: 'long' })
@@ -96,22 +90,28 @@ export function EditMealDialog({ isOpen, onOpenChange, meal }: EditMealModalProp
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-sm z-[100]">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Pencil className="h-5 w-5 text-orange-500" />
+            <DialogContent className="max-w-sm z-[100] border-white/20 bg-[#131a2c]/92">
+                <DialogHeader className="pr-8">
+                    <DialogTitle className="flex items-center gap-2 text-xl">
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-300/25">
+                            <Pencil className="h-4 w-4 text-amber-300" />
+                        </span>
                         Edit Meal
                     </DialogTitle>
                     <DialogDescription>
                         Modify details for <strong>{meal.recipeName}</strong>
                     </DialogDescription>
                 </DialogHeader>
+                <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-amber-500/10 to-blue-500/10 px-4 py-3">
+                    <p className="text-xs uppercase tracking-wider text-white/60">Adjustments</p>
+                    <p className="text-sm text-white/85">Move this meal to a different day or slot without recreating it.</p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                        <Label>Day of the Week</Label>
+                        <Label className="text-xs uppercase tracking-wider text-slate-300">Day of the Week</Label>
                         <Select value={day} onValueChange={setDay}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-white/5 border-white/15">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="z-[101]">
@@ -124,9 +124,9 @@ export function EditMealDialog({ isOpen, onOpenChange, meal }: EditMealModalProp
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Meal Type</Label>
+                        <Label className="text-xs uppercase tracking-wider text-slate-300">Meal Type</Label>
                         <Select value={mealType} onValueChange={setMealType}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-white/5 border-white/15">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="z-[101]">
@@ -138,19 +138,20 @@ export function EditMealDialog({ isOpen, onOpenChange, meal }: EditMealModalProp
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Notes</Label>
+                        <Label className="text-xs uppercase tracking-wider text-slate-300">Notes</Label>
                         <Input
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="Add notes..."
+                            className="bg-white/5 border-white/15"
                         />
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-white/15 rounded-xl w-full sm:w-auto">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className="glass-button rounded-xl w-full sm:w-auto">
                             {isLoading ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (

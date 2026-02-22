@@ -260,14 +260,15 @@ export const useStore = create<AppStore>((set, get) => ({
         const state = get()
 
         if (state.isAuthenticated) {
-            // Delete from cloud
+            const previousRecipes = state.recipes
+            set((current) => ({
+                recipes: current.recipes.filter((r) => r.id !== id),
+            }))
             try {
                 await api.deleteRecipe(id)
-                set((state) => ({
-                    recipes: state.recipes.filter((r) => r.id !== id),
-                }))
             } catch (error) {
                 console.error('Failed to delete recipe:', error)
+                set({ recipes: previousRecipes })
                 throw error
             }
         } else {
@@ -328,11 +329,27 @@ export const useStore = create<AppStore>((set, get) => ({
         }
     },
 
-    deleteMeal: (id) => {
-        deleteMealFromStorage(id)
-        set((state) => ({
-            meals: state.meals.filter((m) => m.id !== id),
-        }))
+    deleteMeal: async (id) => {
+        const state = get()
+
+        if (state.isAuthenticated) {
+            const previousMeals = state.meals
+            set((current) => ({
+                meals: current.meals.filter((m) => m.id !== id),
+            }))
+            try {
+                await api.deleteMeal(id)
+            } catch (error) {
+                console.error('Failed to delete meal:', error)
+                set({ meals: previousMeals })
+                throw error
+            }
+        } else {
+            deleteMealFromStorage(id)
+            set((current) => ({
+                meals: current.meals.filter((m) => m.id !== id),
+            }))
+        }
     },
 
     // Grocery actions
